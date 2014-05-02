@@ -9,13 +9,14 @@
 #import "DetailViewController.h"
 #import "AppDelegate.h"
 #import "DetailViewRequestOperation.h"
+#import "MapKeywordRequestOperation.h"
 #import "ViewController.h"
 #import "UIDevice-ORMMA.h"
 
 @implementation DetailViewController
 @synthesize tableView, mapView;
 @synthesize standMode, gaz_id, sourceParamString, settingsParamString, detailTitle;
-@synthesize annotations;
+@synthesize annotations, clusterKeywordMarkers, locationNameMarkers;
 @synthesize detailViewFont;
 @synthesize activityIndicator;
 @synthesize snippetViewController;
@@ -237,7 +238,6 @@ andClusterID:(int)clusterID
     
     translateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"translate.png"] style:UIBarButtonItemStylePlain target:self action:@selector(translateBarButtonItemSelected)];
     controllerIndex = [self.navigationController.viewControllers indexOfObject:self];
-    // Do any additional setup after loading the view from its nib.
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -367,7 +367,15 @@ andClusterID:(int)clusterID
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if (cell == nil)
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-
+    
+    if (row == selectedIndex) {
+        cell.backgroundColor = [UIColor colorWithRed:(76.0/255.0) green:(161.0/255.0) blue:(255.0/255.0) alpha:1.0]; // perfect color suggested by @mohamadHafez
+        [[cell textLabel] setTextColor:[UIColor whiteColor]];
+    } else {
+        cell.backgroundColor = [UIColor whiteColor];
+        [[cell textLabel] setTextColor:[UIColor blueColor]];
+    }
+    
     NewsAnnotation *currAnnotation = [annotations objectAtIndex:row];
     
     if ([currAnnotation keyword] != nil) {
@@ -391,7 +399,6 @@ andClusterID:(int)clusterID
         
     }
     [[cell textLabel] setFont:detailViewFont];
-    [[cell textLabel] setTextColor:[UIColor blueColor]];
         
     return cell;
 }
@@ -401,8 +408,15 @@ andClusterID:(int)clusterID
     int row = [indexPath row];
     
     if (!isPad) {
-        snippetViewController = [[SnippetViewController alloc] initWithAnnotations:annotations andAnnotationIndex:row andConstraints:[sourceParamString stringByAppendingString:settingsParamString]];
-        [self.navigationController pushViewController:snippetViewController animated:YES];
+        if (selectedIndex == row) {
+            snippetViewController = [[SnippetViewController alloc] initWithAnnotations:annotations andAnnotationIndex:row andConstraints:[sourceParamString stringByAppendingString:settingsParamString]];
+            [self.navigationController pushViewController:snippetViewController animated:YES];
+        } else {
+            selectedIndex = row;
+            [self.tableView reloadData];
+            
+            
+        }
     } else {
         snippetViewController = [[SnippetViewController alloc] initWithNibName:@"SnippetViewController_iPad" andAnnotations:annotations andAnnotationIndex:row andConstraints:[sourceParamString stringByAppendingString:settingsParamString] andBackTitle:[self title]];
         [snippetViewController.view setFrame:CGRectMake(snippetViewController.self.view.frame.origin.x, snippetViewController.self.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height)];
@@ -491,7 +505,31 @@ andClusterID:(int)clusterID
         }
         
         [self.tableView reloadData];
+        
+        ViewController *viewController = [[self.navigationController viewControllers] objectAtIndex:0];
+        int layer = [viewController layerSelected];
+        
+        NSString *modeParam = @"newsstand";
+        if (layer != 3) {
+            
+        } else {
+            
+        }
+
+        //NSString *urlString = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/map_keyword?%@%@", modeParam, sourceParamString, settingsParamString];
+        //MapKeywordRequestOperation *mapKeyworRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:<#(NSString *)#> andDetailViewController:<#(DetailViewController *)#> andLayer:<#(int)#> isClusterOrKeyword:<#(BOOL)#>]
+        //[queue addOperation:detailViewRequestOperation];
     }
+}
+
+-(void)parseEndedClusterKeyword:(NSMutableArray*)clusterKeywordArray
+{
+    clusterKeywordMarkers = [[NSMutableArray alloc] initWithArray:clusterKeywordArray];
+}
+
+-(void)parseEndedLocationName:(NSMutableArray*)locationNameArray
+{
+    locationNameMarkers = [[NSMutableArray alloc] initWithArray:locationNameArray];
 }
 
 

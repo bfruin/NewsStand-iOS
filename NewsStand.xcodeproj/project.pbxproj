@@ -307,6 +307,7 @@
 		6EEF4D7D17F2333E00AAA1A0 /* ThickerSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EEF4D7C17F2333E00AAA1A0 /* ThickerSlider.m */; };
 		6EEF4D801805E16000AAA1A0 /* PrefetchRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EEF4D7F1805E16000AAA1A0 /* PrefetchRequestOperation.m */; };
 		6EF2B2B71912D04100484E7C /* DetailViewController_Landscape.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2B61912D04100484E7C /* DetailViewController_Landscape.xib */; };
+		6EF2B2BB19142DDD00484E7C /* MapKeywordRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EF2B2BA19142DDD00484E7C /* MapKeywordRequestOperation.m */; };
 		6EF43C2A166D50A800CA18C4 /* RelatedStoriesRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EF43C29166D50A800CA18C4 /* RelatedStoriesRequestOperation.m */; };
 		6EFD7CEF15E2C5300047DE0F /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EFD7CEE15E2C5300047DE0F /* CoreMotion.framework */; };
 		6EFE184D15B61AA4008C6DC1 /* NSString-Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EFE184C15B61AA4008C6DC1 /* NSString-Compare.m */; };
@@ -979,6 +980,8 @@
 		6EEF4D7E1805E16000AAA1A0 /* PrefetchRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefetchRequestOperation.h; sourceTree = "<group>"; };
 		6EEF4D7F1805E16000AAA1A0 /* PrefetchRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefetchRequestOperation.m; sourceTree = "<group>"; };
 		6EF2B2B61912D04100484E7C /* DetailViewController_Landscape.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController_Landscape.xib; sourceTree = "<group>"; };
+		6EF2B2B919142DDD00484E7C /* MapKeywordRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapKeywordRequestOperation.h; sourceTree = "<group>"; };
+		6EF2B2BA19142DDD00484E7C /* MapKeywordRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapKeywordRequestOperation.m; sourceTree = "<group>"; };
 		6EF43C28166D50A800CA18C4 /* RelatedStoriesRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RelatedStoriesRequestOperation.h; sourceTree = "<group>"; };
 		6EF43C29166D50A800CA18C4 /* RelatedStoriesRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RelatedStoriesRequestOperation.m; sourceTree = "<group>"; };
 		6EFD7CEE15E2C5300047DE0F /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -2214,6 +2217,8 @@
 				6EE2912F14C601F500FE0D07 /* DetailViewController.xib */,
 				6EF2B2B61912D04100484E7C /* DetailViewController_Landscape.xib */,
 				6ED1182F15643E4200665526 /* DetailViewController_iPad.xib */,
+				6EF2B2B919142DDD00484E7C /* MapKeywordRequestOperation.h */,
+				6EF2B2BA19142DDD00484E7C /* MapKeywordRequestOperation.m */,
 				6EF43C27166D505400CA18C4 /* Related Stories View */,
 				6EE2913C14C61BFE00FE0D07 /* SnippetViewController.h */,
 				6EE2913D14C61BFE00FE0D07 /* SnippetViewController.m */,
@@ -2880,6 +2885,7 @@
 				6E45D22114CA196F00EEDBCE /* UIImage+Decompress.m in Sources */,
 				6E45D22214CA196F00EEDBCE /* UIImageViewTap.m in Sources */,
 				6E45D22314CA196F00EEDBCE /* UIViewTap.m in Sources */,
+				6EF2B2BB19142DDD00484E7C /* MapKeywordRequestOperation.m in Sources */,
 				6E8A130914CDE890002AA218 /* AddFeedViewController.m in Sources */,
 				6E8A130D14CDECEA002AA218 /* NewFeed.m in Sources */,
 				6E8A131014CDF58C002AA218 /* AddFeedRequestOperation.m in Sources */,

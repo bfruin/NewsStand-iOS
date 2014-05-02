@@ -25,6 +25,8 @@
     
     //The annotations
     NSMutableArray *annotations;
+    NSMutableArray *clusterKeywordMarkers;
+    NSMutableArray *locationNameMarkers;
     
     //Font for cells
     UIFont *detailViewFont;
@@ -45,6 +47,9 @@
     IBOutlet UINavigationBar *navigationBar;
     IBOutlet UIBarButtonItem *leftBarButtonItem;
     
+    //Selected Row
+    int selectedIndex;
+    
     // Rotation
     BOOL rotated;
     BOOL dismissParent;
@@ -59,6 +64,8 @@
 
 //The annotations
 @property (strong, nonatomic) NSMutableArray *annotations;
+@property (strong, nonatomic) NSMutableArray *clusterKeywordMarkers;
+@property (strong, nonatomic) NSMutableArray *locationNameMarkers;
 
 //Font for cells
 @property (strong, nonatomic) UIFont *detailViewFont;
@@ -101,6 +108,8 @@
 
 //NSXMLParser Callback
 -(void)parseEnded:(NSMutableArray*)annotationsArray;
+-(void)parseEndedClusterKeyword:(NSMutableArray*)clusterKeywordArray;
+-(void)parseEndedLocationName:(NSMutableArray*)locationNameArray;
 
 //iPad Navigation Control
 -(IBAction)leftBarButtonItemSelected:(id)sender;
