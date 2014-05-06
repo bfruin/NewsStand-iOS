@@ -53,6 +53,9 @@
     //Marker Images
     UIImage *locationImage;
     UIImage *keywordImage;
+    UIImage *highlightedLocationImage;
+    UIImage *highlightedKeywordImage;
+    UIImage *currentImage;
     
     BOOL isPad;
     
@@ -107,6 +110,9 @@
 //Marker Images
 @property (strong, nonatomic) UIImage *locationImage;
 @property (strong, nonatomic) UIImage *keywordImage;
+@property (strong, nonatomic) UIImage *highlightedLocationImage;
+@property (strong, nonatomic) UIImage *highlightedKeywordImage;
+@property (strong, nonatomic) UIImage *currentImage;
 
 //Specify where results will be located
 @property (nonatomic, readonly) int standMode;

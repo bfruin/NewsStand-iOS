@@ -25,7 +25,7 @@
 @synthesize activityIndicator;
 @synthesize snippetViewController;
 @synthesize translateBarButtonItem;
-@synthesize locationImage, keywordImage;
+@synthesize locationImage, keywordImage, highlightedLocationImage, highlightedKeywordImage, currentImage;
 @synthesize navigationBar, leftBarButtonItem;
 @synthesize dismissParent;
 @synthesize queue;
@@ -254,6 +254,9 @@ andClusterID:(int)clusterID
 {
     locationImage = [[UIImage imageNamed:@"blue_ball.png"] scaleToSize:CGSizeMake(12.0, 12.0)];
     keywordImage = [[UIImage imageNamed:@"yellow_ball.png"] scaleToSize:CGSizeMake(12.0, 12.0)];
+    highlightedLocationImage = [[UIImage imageNamed:@"green_ball.png"] scaleToSize:CGSizeMake(17.0, 17.0)];
+    highlightedKeywordImage = [[UIImage imageNamed:@"red_ball.png"] scaleToSize:CGSizeMake(17.0, 17.0)];
+    currentImage = [[UIImage imageNamed:@"black_ball.png"] scaleToSize:CGSizeMake(17.0, 17.0)];
 }
 
 
@@ -488,7 +491,9 @@ andClusterID:(int)clusterID
     NewsAnnotation *newsAnnotation = (NewsAnnotation *)annotation;
     annotationView.canShowCallout = YES;
     
-    if (newsAnnotation.locationMarker) {
+    if (newsAnnotation.gaz_id == gaz_id) {
+        annotationView.image = currentImage;
+    } else if (newsAnnotation.locationMarker) {
         annotationView.image = locationImage;
     } else {
         annotationView.image = keywordImage;
@@ -582,8 +587,6 @@ andClusterID:(int)clusterID
 }
 -(IBAction)keywordSliderChangedValue:(id)sender
 {
-    NSLog(@"CALLED");
-    
     int i = 0;
     if (previousClusterKeywordMarkers != nil) {
         int max = (int)(keywordSlider.value * previousClusterKeywordMarkers.count + 1);
@@ -614,15 +617,22 @@ andClusterID:(int)clusterID
     }
     
     [minimapText setText:text];
+    [mapView reloadInputViews];
 }
 
 -(IBAction)locationPreviousPressed:(id)sender
 {
+    MKAnnotationView *av = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
+    av.image = locationImage;
+    
     highlightedLocation--;
+    MKAnnotationView *highlightedAV = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
+    highlightedAV.image = highlightedLocationImage;
     
     [locationNext setHidden:NO];
     if (highlightedLocation < 1) {
         [locationPrevious setHidden:YES];
+        
     }
     
     [self setMinimapText:[[locationNameMarkers objectAtIndex:highlightedLocation] fullName] isLocation:YES];
