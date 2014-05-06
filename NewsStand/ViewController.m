@@ -824,7 +824,8 @@ static float MOTION_SCALE = 5.0;
             annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         } else {  // Keyword, People, Disease Layer
             annotationView = (NewsAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"newsview2"];
-            annotationView = [[NewsAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"newsview2"];
+            if (annotationView == nil)
+                annotationView = [[NewsAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"newsview2"];
                 
             
             [annotationView setNewsAnnotation:annotation];
@@ -2137,8 +2138,6 @@ static float MOTION_SCALE = 5.0;
         annotations = nil;
     }
     
-    NSLog(@"1");
-    
     NSMutableArray *imageURLs = [[NSMutableArray alloc] init];
     
     if (standMode == 2) {
@@ -2154,24 +2153,20 @@ static float MOTION_SCALE = 5.0;
     } else {
         annotations = [[NSMutableArray alloc] initWithArray:resultAnnotations];
     }
-    NSLog(@"2");
         
     if (checkForMarker && [annotations count] == 0) {
         MKCoordinateSpan span = MKCoordinateSpanMake(mapView.region.span.latitudeDelta +.02, mapView.region.span.longitudeDelta +.02);
         MKCoordinateRegion region;
         region.span = span;
         region.center = mapView.region.center;
-        NSLog(@"3");
         [mapView setRegion:region animated: YES];
     } else {
         checkForMarker = FALSE;
     }
-    NSLog(@"4");
     
     [self mapSliderChangedValue:nil];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     [activityIndicator stopAnimating];
-    NSLog(@"5");
 }
 
 @end

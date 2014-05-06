@@ -8,6 +8,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DetailViewController">
             <connections>
                 <outlet property="activityIndicator" destination="aY8-1c-J9y" id="znR-gu-qnx"/>
+                <outlet property="keywordSlider" destination="YHG-jC-DUh" id="iYh-PJ-VWI"/>
+                <outlet property="locationSlider" destination="D0S-Wv-VIL" id="1H2-8F-YQy"/>
                 <outlet property="mapView" destination="DUl-7I-uEo" id="zAl-0A-r42"/>
                 <outlet property="tableView" destination="ttw-0F-Lw0" id="DaU-u9-86w"/>
                 <outlet property="view" destination="iN0-l3-epB" id="r9g-sX-VVx"/>
@@ -38,6 +40,21 @@
                     <rect key="frame" x="306" y="150" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                 </activityIndicatorView>
+                <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="D0S-Wv-VIL">
+                    <rect key="frame" x="314" y="10" width="118" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <action selector="locationSliderChangedValue:" destination="-2" eventType="valueChanged" id="OCa-ce-to0"/>
+                    </connections>
+                </slider>
+                <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="YHG-jC-DUh">
+                    <rect key="frame" x="452" y="10" width="118" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="minimumTrackTintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <connections>
+                        <action selector="keywordSliderChangedValue:" destination="-2" eventType="valueChanged" id="vLg-1X-7jM"/>
+                    </connections>
+                </slider>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>

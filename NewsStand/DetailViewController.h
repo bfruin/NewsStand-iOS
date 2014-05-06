@@ -10,10 +10,24 @@
 #import "NewsAnnotation.h"
 #import "SnippetViewController.h"
 
-@interface DetailViewController : UIViewController <UITableViewDelegate, UINavigationBarDelegate>
+@interface DetailViewController : UIViewController <UITableViewDelegate, UINavigationBarDelegate, MKMapViewDelegate>
 {
     IBOutlet UITableView *tableView;
     IBOutlet MKMapView *mapView;
+    
+    IBOutlet UISlider *locationSlider;
+    IBOutlet UISlider *keywordSlider;
+    int lastLocationSliderValue;
+    int lastKeywordSliderValue;
+    
+    //Cycling Buttons
+    IBOutlet UIButton *locationPrevious;
+    IBOutlet UIButton *locationNext;
+    IBOutlet UIButton *keywordPrevious;
+    IBOutlet UIButton *keywordNext;
+    int highlightedLocation;
+    int highlightedKeyword;
+    IBOutlet UILabel *minimapText;
     
     //Info
     int standMode;
@@ -25,7 +39,8 @@
     
     //The annotations
     NSMutableArray *annotations;
-    NSMutableArray *clusterKeywordMarkers;
+    NSMutableDictionary *clusterKeywordMarkers;
+    NSMutableArray *previousClusterKeywordMarkers;
     NSMutableArray *locationNameMarkers;
     
     //Font for cells
@@ -34,6 +49,11 @@
     //Activity Indicator
     IBOutlet UIActivityIndicatorView *activityIndicator;
 
+    
+    //Marker Images
+    UIImage *locationImage;
+    UIImage *keywordImage;
+    
     BOOL isPad;
     
     //Snippet Viewer for iPad
@@ -62,9 +82,20 @@
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) IBOutlet MKMapView *mapView;
 
+//Minimap sliders
+@property (strong, nonatomic) IBOutlet UISlider *locationSlider;
+@property (strong, nonatomic) IBOutlet UISlider *keywordSlider;
+
+//Cycling Buttons
+@property (strong, nonatomic) IBOutlet UIButton *locationPrevious;
+@property (strong, nonatomic) IBOutlet UIButton *locationNext;
+@property (strong, nonatomic) IBOutlet UIButton *keywordPrevious;
+@property (strong, nonatomic) IBOutlet UIButton *keywordNext;
+@property (strong, nonatomic) IBOutlet UILabel *minimapText;
+
 //The annotations
 @property (strong, nonatomic) NSMutableArray *annotations;
-@property (strong, nonatomic) NSMutableArray *clusterKeywordMarkers;
+@property (strong, nonatomic) NSMutableDictionary *clusterKeywordMarkers;
 @property (strong, nonatomic) NSMutableArray *locationNameMarkers;
 
 //Font for cells
@@ -72,6 +103,10 @@
 
 //Activity Indicator
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+
+//Marker Images
+@property (strong, nonatomic) UIImage *locationImage;
+@property (strong, nonatomic) UIImage *keywordImage;
 
 //Specify where results will be located
 @property (nonatomic, readonly) int standMode;
@@ -105,6 +140,10 @@
 
 //Translate Bar Button Item Selected
 -(void)translateBarButtonItemSelected;
+
+//Sliders
+-(IBAction)locationSliderChangedValue:(id)sender;
+-(IBAction)keywordSliderChangedValue:(id)sender;
 
 //NSXMLParser Callback
 -(void)parseEnded:(NSMutableArray*)annotationsArray;

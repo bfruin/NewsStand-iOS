@@ -10,12 +10,12 @@
 
 @implementation NewsAnnotation
 
-@synthesize title, translate_title, subtitle, name, markup, translate_markup, description, topic;
+@synthesize title, translate_title, subtitle, name, fullName, markup, translate_markup, description, topic;
 @synthesize keyword, domain, time, url, img_url, caption, snippet;
 @synthesize latitude, longitude;
 @synthesize cluster_id, gaz_id, gaztag_id, num_images, num_videos, num_docs, width, height;
 @synthesize distinctiveness;
-@synthesize displayed, imageFailed, display_translate_title;
+@synthesize locationMarker, displayed, imageFailed, display_translate_title;
 
 - (CLLocationCoordinate2D)coordinate
 {

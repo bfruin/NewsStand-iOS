@@ -16,6 +16,7 @@
     NSString *translate_title;
     NSString *subtitle;
     NSString *name;
+    NSString *fullName;
     NSString *markup;
     NSString *translate_markup;
     NSString *description;
@@ -42,6 +43,7 @@
     
     int distinctiveness;
     
+    BOOL locationMarker;
     BOOL displayed;
     BOOL imageFailed;
     BOOL display_translate_title;
@@ -53,6 +55,7 @@
 @property (copy, nonatomic) NSString *translate_title;
 @property (copy, nonatomic) NSString *subtitle;
 @property (strong, nonatomic) NSString *name;
+@property (strong, nonatomic) NSString *fullName;
 @property (strong, nonatomic) NSString *markup;
 @property (strong, nonatomic) NSString *translate_markup;
 @property (strong, nonatomic) NSString *description;
@@ -79,6 +82,7 @@
 
 @property (nonatomic) int distinctiveness;
 
+@property (nonatomic, readwrite) BOOL locationMarker;
 @property (nonatomic, readwrite) BOOL displayed;
 @property (nonatomic, readwrite) BOOL imageFailed;
 @property (nonatomic, readwrite) BOOL display_translate_title;

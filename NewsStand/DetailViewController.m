@@ -8,19 +8,24 @@
 
 #import "DetailViewController.h"
 #import "AppDelegate.h"
+#import "NewsAnnotationView.h"
 #import "DetailViewRequestOperation.h"
 #import "MapKeywordRequestOperation.h"
 #import "ViewController.h"
 #import "UIDevice-ORMMA.h"
+#import "UIImageResizing.h"
 
 @implementation DetailViewController
 @synthesize tableView, mapView;
+@synthesize locationSlider, keywordSlider;
+@synthesize locationPrevious, locationNext, keywordPrevious, keywordNext, minimapText;
 @synthesize standMode, gaz_id, sourceParamString, settingsParamString, detailTitle;
 @synthesize annotations, clusterKeywordMarkers, locationNameMarkers;
 @synthesize detailViewFont;
 @synthesize activityIndicator;
 @synthesize snippetViewController;
 @synthesize translateBarButtonItem;
+@synthesize locationImage, keywordImage;
 @synthesize navigationBar, leftBarButtonItem;
 @synthesize dismissParent;
 @synthesize queue;
@@ -213,6 +218,8 @@ andClusterID:(int)clusterID
     [navigationBar.topItem setTitle:detailTitle];
     detailViewFont = [UIFont systemFontOfSize:14.5];
     
+    [self initializeMarkerImages];
+    
     if (annotations == nil || [annotations count] == 0) {
         [activityIndicator startAnimating];
     }
@@ -238,7 +245,17 @@ andClusterID:(int)clusterID
     
     translateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"translate.png"] style:UIBarButtonItemStylePlain target:self action:@selector(translateBarButtonItemSelected)];
     controllerIndex = [self.navigationController.viewControllers indexOfObject:self];
+    
+    lastLocationSliderValue = locationSlider.value;
+    lastKeywordSliderValue = keywordSlider.value;
 }
+
+- (void)initializeMarkerImages
+{
+    locationImage = [[UIImage imageNamed:@"blue_ball.png"] scaleToSize:CGSizeMake(12.0, 12.0)];
+    keywordImage = [[UIImage imageNamed:@"yellow_ball.png"] scaleToSize:CGSizeMake(12.0, 12.0)];
+}
+
 
 - (void) viewDidAppear:(BOOL)animated
 {
@@ -415,7 +432,38 @@ andClusterID:(int)clusterID
             selectedIndex = row;
             [self.tableView reloadData];
             
+            int currentClusterID = [[annotations objectAtIndex:selectedIndex] cluster_id];
             
+            if ([clusterKeywordMarkers objectForKey:[NSNumber numberWithInt:currentClusterID]] != nil) {
+                NSMutableArray *currentClusterMarkers = [clusterKeywordMarkers objectForKey:[NSNumber numberWithInt:currentClusterID]];
+                if (currentClusterMarkers != nil && [currentClusterMarkers count] > 1) {
+                    [keywordSlider setHidden:NO];
+                } else {
+                    [keywordSlider setHidden:YES];
+                }
+                [mapView removeAnnotations:previousClusterKeywordMarkers];
+                [self keywordSliderChangedValue:nil];
+            } else {
+                ViewController *viewController = [[self.navigationController viewControllers] objectAtIndex:0];
+                int layer = [viewController layerSelected];
+            
+                NSString *modeParam = @"newsstand";
+            
+                if (layer != 3) {
+                    NSString *urlStringClusterKeyword;
+                    if (layer == 0) { // Use cluster_id for icon layer
+                        urlStringClusterKeyword = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/xml_map?%@%@&cluster_id=%d", modeParam, sourceParamString, settingsParamString, [[annotations objectAtIndex:selectedIndex] cluster_id]];
+                    } else { // Use keyword for other layers
+                        urlStringClusterKeyword = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/map_keyword?%@%@&keyword=%@&layer=%d", modeParam, sourceParamString, settingsParamString, [[annotations objectAtIndex:selectedIndex] keyword], layer];
+                    }
+                
+                    MapKeywordRequestOperation *mapClusterKeywordRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:urlStringClusterKeyword andDetailViewController:self   andLayer:layer isClusterOrKeyword:true];
+                    [queue addOperation:mapClusterKeywordRequest];
+                
+                    NSLog([NSString stringWithFormat:@"Cluster/Keyword request: %@", urlStringClusterKeyword]);
+                }
+            }
+            [self fitMapToMarkers];
         }
     } else {
         snippetViewController = [[SnippetViewController alloc] initWithNibName:@"SnippetViewController_iPad" andAnnotations:annotations andAnnotationIndex:row andConstraints:[sourceParamString stringByAppendingString:settingsParamString] andBackTitle:[self title]];
@@ -430,11 +478,166 @@ andClusterID:(int)clusterID
     }
 }
 
+#pragma mark - Map / Delegate
+-(MKAnnotationView *)mapView:(MKMapView *)localMapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    NewsAnnotationView *annotationView = (NewsAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"newsview"];
+    if (annotationView == nil)
+        annotationView = [[NewsAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"newsview"];
+    
+    NewsAnnotation *newsAnnotation = (NewsAnnotation *)annotation;
+    annotationView.canShowCallout = YES;
+    
+    if (newsAnnotation.locationMarker) {
+        annotationView.image = locationImage;
+    } else {
+        annotationView.image = keywordImage;
+    }
+    
+    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    
+    return annotationView;
+}
+
+-(void)fitMapToMarkers
+{
+    float minLon = 500.0;
+    float maxLon = -500.0;
+    float minLat = 500.0;
+	float maxLat = -500.0;
+    
+    if (locationNameMarkers != nil) {
+        for (NewsAnnotation *marker in locationNameMarkers) {
+            if ([marker latitude] > maxLat)
+                maxLat = [marker latitude];
+            if ([marker latitude] < minLat)
+                minLat = [marker latitude];
+        
+            if ([marker longitude] > maxLon)
+                maxLon = [marker longitude];
+            if ([marker longitude] < minLon)
+                minLon = [marker longitude];
+        }
+    }
+    
+    if (previousClusterKeywordMarkers != nil) {
+        for (NewsAnnotation *marker in previousClusterKeywordMarkers) {
+            if ([marker latitude] > maxLat)
+                maxLat = [marker latitude];
+            if ([marker latitude] < minLat)
+                minLat = [marker latitude];
+            
+            if ([marker longitude] > maxLon)
+                maxLon = [marker longitude];
+            if ([marker longitude] < minLon)
+                minLon = [marker longitude];
+        }
+    }
+    
+    CLLocationCoordinate2D center;
+	center.latitude = (maxLat + minLat) / 2;
+	center.longitude = (maxLon + minLon) / 2;
+	
+	MKCoordinateSpan span = MKCoordinateSpanMake(fabs(maxLat - center.latitude) * 2, fabs(maxLon - center.longitude) * 2);
+    
+    if(span.latitudeDelta < 1)
+        span.latitudeDelta = 5;
+    if(span.longitudeDelta < 1)
+        span.longitudeDelta = 5;
+	
+	MKCoordinateRegion region;
+	region.span = span;
+	region.center = center;
+
+    [mapView setRegion:region animated: NO];
+}
+
 #pragma mark - Translation
 - (void) translateBarButtonItemSelected
 {
     translated_titles = !translated_titles;
     [self.tableView reloadData];
+}
+
+#pragma mark - Sliders
+
+//Sliders
+-(IBAction)locationSliderChangedValue:(id)sender
+{
+    int i = 0;
+    int max = (int)(locationSlider.value * locationNameMarkers.count + 1);
+    int lastMax = (int)(lastLocationSliderValue * locationNameMarkers.count + 1);
+    
+    lastLocationSliderValue = locationSlider.value;
+    
+    while (i < locationNameMarkers.count) {
+        if (i <= lastMax) {
+            [mapView addAnnotation:[locationNameMarkers objectAtIndex:i]];
+        } else if (i > max) {
+            [mapView removeAnnotation:[locationNameMarkers objectAtIndex:i]];
+        }
+        
+        i+=1;
+    }
+}
+-(IBAction)keywordSliderChangedValue:(id)sender
+{
+    NSLog(@"CALLED");
+    
+    int i = 0;
+    if (previousClusterKeywordMarkers != nil) {
+        int max = (int)(keywordSlider.value * previousClusterKeywordMarkers.count + 1);
+        int lastMax = (int)(lastKeywordSliderValue * previousClusterKeywordMarkers.count + 1);
+    
+        lastKeywordSliderValue = keywordSlider.value;
+    
+        while (i < previousClusterKeywordMarkers.count) {
+            if (i <= lastMax) {
+                [mapView addAnnotation:[previousClusterKeywordMarkers objectAtIndex:i]];
+            } else if (i > max) {
+                [mapView removeAnnotation:[previousClusterKeywordMarkers objectAtIndex:i]];
+            }
+        
+            i+=1;
+        }
+    }
+}
+
+#pragma mark - Minimap Cycling
+-(void)setMinimapText:(NSString*)text isLocation:(BOOL)isLocation
+{
+    [minimapText setHidden:NO];
+    if (isLocation) {
+        [minimapText setTextColor:[UIColor blueColor]];
+    } else {
+        [minimapText setTextColor:[UIColor yellowColor]];
+    }
+    
+    [minimapText setText:text];
+}
+
+-(IBAction)locationPreviousPressed:(id)sender
+{
+    highlightedLocation--;
+    
+    [locationNext setHidden:NO];
+    if (highlightedLocation < 1) {
+        [locationPrevious setHidden:YES];
+    }
+    
+    [self setMinimapText:[[locationNameMarkers objectAtIndex:highlightedLocation] fullName] isLocation:YES];
+}
+
+-(IBAction)locationNextPressed:(id)sender
+{
+    highlightedLocation++;
+    
+    [locationPrevious setHidden:NO];
+    if (highlightedLocation >= [locationNameMarkers count]-1) {
+        [locationNext setHidden:YES];
+    }
+    
+    [self setMinimapText:[[locationNameMarkers objectAtIndex:highlightedLocation] fullName] isLocation:YES];
 }
 
 #pragma mark - iPad
@@ -499,7 +702,6 @@ andClusterID:(int)clusterID
         for (NewsAnnotation *currentAnnotation in annotations) {
             if ([currentAnnotation translate_title] != nil && ![[currentAnnotation translate_title] isEqualToString:@""]) {
                 self.navigationItem.rightBarButtonItem = translateBarButtonItem;
-                NSLog(@"TRANSLATE TITLE BUTTON %@", [currentAnnotation translate_title]);
                 break;
             }
         }
@@ -511,25 +713,63 @@ andClusterID:(int)clusterID
         
         NSString *modeParam = @"newsstand";
         if (layer != 3) {
+            NSString *urlStringClusterKeyword;
+            if (layer == 0) { // Use cluster_id for icon layer
+                urlStringClusterKeyword = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/xml_map?%@%@&cluster_id=%d", modeParam, sourceParamString, settingsParamString, [[annotations objectAtIndex:0] cluster_id]];
+            } else { // Use keyword for other layers
+                urlStringClusterKeyword = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/map_keyword?%@%@&keyword=%@&layer=%d", modeParam, sourceParamString, settingsParamString, [[annotations objectAtIndex:0] keyword], layer];
+            }
             
+            MapKeywordRequestOperation *mapClusterKeywordRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:urlStringClusterKeyword andDetailViewController:self andLayer:layer isClusterOrKeyword:true];
+            [queue addOperation:mapClusterKeywordRequest];
+            
+            NSLog([NSString stringWithFormat:@"Cluster/Keyword request: %@", urlStringClusterKeyword]);
+            
+            NSString *urlStringLoc = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/map_keyword?%@%@&layer=%d&location_name=%@", modeParam, sourceParamString, settingsParamString, layer, [[annotations objectAtIndex:0] name]];
+            MapKeywordRequestOperation *mapLocRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:urlStringLoc andDetailViewController:self andLayer:layer isClusterOrKeyword:false];
+            
+            
+            NSLog([NSString stringWithFormat:@"Location request: %@", urlStringLoc]);
+            [queue addOperation:mapLocRequest];
         } else {
-            
+            NSString *urlStringLoc = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/map_keyword?%@%@&keyword=%@&layer=%d", modeParam, sourceParamString, settingsParamString, [[annotations objectAtIndex:0] name], layer];
+            MapKeywordRequestOperation *mapLocRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:urlStringLoc andDetailViewController:self andLayer:layer isClusterOrKeyword:false];
+            [queue addOperation:mapLocRequest];
         }
-
-        //NSString *urlString = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/map_keyword?%@%@", modeParam, sourceParamString, settingsParamString];
-        //MapKeywordRequestOperation *mapKeyworRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:<#(NSString *)#> andDetailViewController:<#(DetailViewController *)#> andLayer:<#(int)#> isClusterOrKeyword:<#(BOOL)#>]
-        //[queue addOperation:detailViewRequestOperation];
     }
 }
 
 -(void)parseEndedClusterKeyword:(NSMutableArray*)clusterKeywordArray
 {
-    clusterKeywordMarkers = [[NSMutableArray alloc] initWithArray:clusterKeywordArray];
+    if (clusterKeywordMarkers == nil) {
+        clusterKeywordMarkers = [[NSMutableDictionary alloc] init];
+    } else {
+        [mapView removeAnnotations:previousClusterKeywordMarkers];
+    }
+    
+    previousClusterKeywordMarkers = clusterKeywordArray;
+    [clusterKeywordMarkers setObject:clusterKeywordArray forKey:[NSNumber numberWithInt:[[annotations objectAtIndex:selectedIndex] cluster_id]]];
+    if (clusterKeywordMarkers != nil && [clusterKeywordMarkers count] > 1) {
+        [keywordSlider setHidden:NO];
+        [self keywordSliderChangedValue:nil];
+    } else {
+        [keywordSlider setHidden:YES];
+    }
+    [self fitMapToMarkers];
 }
 
 -(void)parseEndedLocationName:(NSMutableArray*)locationNameArray
 {
     locationNameMarkers = [[NSMutableArray alloc] initWithArray:locationNameArray];
+    if (locationNameMarkers.count > 1) {
+        [locationSlider setHidden:NO];
+        [locationNext setHidden:NO];
+        [self locationSliderChangedValue:nil];
+    } else {
+        [locationSlider setHidden:YES];
+        [locationNext setHidden:YES];
+    }
+    [self fitMapToMarkers];
 }
 
 

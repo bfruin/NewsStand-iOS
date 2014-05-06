@@ -175,7 +175,7 @@ static float MOTION_SCALE = 5.0;
     int row = [indexPath row];
     currentRequestID++;
        
-    //[queue cancelAllOperations];
+    [queue cancelAllOperations];
     
     ViewController *viewController = [self.navigationController.viewControllers objectAtIndex:0];
     

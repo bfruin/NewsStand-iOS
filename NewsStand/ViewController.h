@@ -291,7 +291,7 @@ typedef enum {
 //Top Tab Bar Functions
 -(void) homeItemPushed;
 -(void) localItemPushed;
--(IBAction)mapSliderChangedValue:(id)sender;
+
 -(void) worldItemPushed;
 -(void) locateItemPushed;
 

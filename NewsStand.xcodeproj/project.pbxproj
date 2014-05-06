@@ -308,6 +308,11 @@
 		6EEF4D801805E16000AAA1A0 /* PrefetchRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EEF4D7F1805E16000AAA1A0 /* PrefetchRequestOperation.m */; };
 		6EF2B2B71912D04100484E7C /* DetailViewController_Landscape.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2B61912D04100484E7C /* DetailViewController_Landscape.xib */; };
 		6EF2B2BB19142DDD00484E7C /* MapKeywordRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EF2B2BA19142DDD00484E7C /* MapKeywordRequestOperation.m */; };
+		6EF2B2BF19194CB300484E7C /* yellow_ball.png in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2BD19194CB300484E7C /* yellow_ball.png */; };
+		6EF2B2C019194CB300484E7C /* blue_ball.png in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2BE19194CB300484E7C /* blue_ball.png */; };
+		6EF2B2C419197C5C00484E7C /* green_ball.png in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2C119197C5C00484E7C /* green_ball.png */; };
+		6EF2B2C519197C5C00484E7C /* red_ball.png in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2C219197C5C00484E7C /* red_ball.png */; };
+		6EF2B2C619197C5C00484E7C /* black_ball.png in Resources */ = {isa = PBXBuildFile; fileRef = 6EF2B2C319197C5C00484E7C /* black_ball.png */; };
 		6EF43C2A166D50A800CA18C4 /* RelatedStoriesRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EF43C29166D50A800CA18C4 /* RelatedStoriesRequestOperation.m */; };
 		6EFD7CEF15E2C5300047DE0F /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EFD7CEE15E2C5300047DE0F /* CoreMotion.framework */; };
 		6EFE184D15B61AA4008C6DC1 /* NSString-Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EFE184C15B61AA4008C6DC1 /* NSString-Compare.m */; };
@@ -982,6 +987,11 @@
 		6EF2B2B61912D04100484E7C /* DetailViewController_Landscape.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController_Landscape.xib; sourceTree = "<group>"; };
 		6EF2B2B919142DDD00484E7C /* MapKeywordRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapKeywordRequestOperation.h; sourceTree = "<group>"; };
 		6EF2B2BA19142DDD00484E7C /* MapKeywordRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapKeywordRequestOperation.m; sourceTree = "<group>"; };
+		6EF2B2BD19194CB300484E7C /* yellow_ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yellow_ball.png; sourceTree = "<group>"; };
+		6EF2B2BE19194CB300484E7C /* blue_ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blue_ball.png; sourceTree = "<group>"; };
+		6EF2B2C119197C5C00484E7C /* green_ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_ball.png; sourceTree = "<group>"; };
+		6EF2B2C219197C5C00484E7C /* red_ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_ball.png; sourceTree = "<group>"; };
+		6EF2B2C319197C5C00484E7C /* black_ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = black_ball.png; sourceTree = "<group>"; };
 		6EF43C28166D50A800CA18C4 /* RelatedStoriesRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RelatedStoriesRequestOperation.h; sourceTree = "<group>"; };
 		6EF43C29166D50A800CA18C4 /* RelatedStoriesRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RelatedStoriesRequestOperation.m; sourceTree = "<group>"; };
 		6EFD7CEE15E2C5300047DE0F /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -2142,6 +2152,11 @@
 		C661B24E14ACD4BC00E9E395 /* Map Images */ = {
 			isa = PBXGroup;
 			children = (
+				6EF2B2C119197C5C00484E7C /* green_ball.png */,
+				6EF2B2C219197C5C00484E7C /* red_ball.png */,
+				6EF2B2C319197C5C00484E7C /* black_ball.png */,
+				6EF2B2BD19194CB300484E7C /* yellow_ball.png */,
+				6EF2B2BE19194CB300484E7C /* blue_ball.png */,
 				6EE0207E17552BE2007A92EB /* refresh.png */,
 				C67997F314BE274600827FFD /* black.jpg */,
 				C6A6CF0214AD0E0600B042E1 /* bird.png */,
@@ -2694,6 +2709,7 @@
 				6EC7DF9815B890DA00E45AE2 /* jm.png in Resources */,
 				6EC7DF9915B890DA00E45AE2 /* jo.png in Resources */,
 				6EC7DF9A15B890DA00E45AE2 /* jp.png in Resources */,
+				6EF2B2C419197C5C00484E7C /* green_ball.png in Resources */,
 				6EC7DF9B15B890DA00E45AE2 /* ke.png in Resources */,
 				6EC7DF9C15B890DA00E45AE2 /* kg.png in Resources */,
 				6EC7DF9D15B890DA00E45AE2 /* kh.png in Resources */,
@@ -2711,6 +2727,7 @@
 				6EC7DFA915B890DA00E45AE2 /* li.png in Resources */,
 				6EC7DFAA15B890DA00E45AE2 /* lk.png in Resources */,
 				6EC7DFAB15B890DA00E45AE2 /* lr.png in Resources */,
+				6EF2B2C019194CB300484E7C /* blue_ball.png in Resources */,
 				6EC7DFAC15B890DA00E45AE2 /* ls.png in Resources */,
 				6EC7DFAD15B890DA00E45AE2 /* lt.png in Resources */,
 				6EC7DFAE15B890DA00E45AE2 /* lu.png in Resources */,
@@ -2728,6 +2745,7 @@
 				6EC7DFB915B890DA00E45AE2 /* mm.png in Resources */,
 				6EC7DFBA15B890DA00E45AE2 /* mn.png in Resources */,
 				6EC7DFBB15B890DA00E45AE2 /* mo.png in Resources */,
+				6EF2B2BF19194CB300484E7C /* yellow_ball.png in Resources */,
 				6EC7DFBC15B890DA00E45AE2 /* mp.png in Resources */,
 				6EC7DFBD15B890DA00E45AE2 /* mr.png in Resources */,
 				6EC7DFBE15B890DA00E45AE2 /* ms.png in Resources */,
@@ -2802,6 +2820,7 @@
 				6EC7E00315B890DA00E45AE2 /* ug.png in Resources */,
 				6EC7E00415B890DA00E45AE2 /* us.png in Resources */,
 				6EC7E00515B890DA00E45AE2 /* uy.png in Resources */,
+				6EF2B2C519197C5C00484E7C /* red_ball.png in Resources */,
 				6EC7E00615B890DA00E45AE2 /* uz.png in Resources */,
 				6EC7E00715B890DA00E45AE2 /* vc.png in Resources */,
 				6EC7E00815B890DA00E45AE2 /* ve.png in Resources */,
@@ -2810,6 +2829,7 @@
 				6EC7E00B15B890DA00E45AE2 /* vn.png in Resources */,
 				6EA6D42C18B534C900D6E0B2 /* locate.png in Resources */,
 				6EC7E00C15B890DA00E45AE2 /* vu.png in Resources */,
+				6EF2B2C619197C5C00484E7C /* black_ball.png in Resources */,
 				6EC7E00D15B890DA00E45AE2 /* ws.png in Resources */,
 				6EC7E00E15B890DA00E45AE2 /* ye.png in Resources */,
 				6EC7E00F15B890DA00E45AE2 /* za.png in Resources */,

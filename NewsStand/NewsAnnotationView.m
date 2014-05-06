@@ -48,7 +48,6 @@ static double EPSILON = 5.96e-08;
         
         if (annotations != nil) {
         for (NewsAnnotation *currentAnnotation in annotations) {
-            NSLog(@"A");
             if (currentAnnotation != nil && newsAnnotation != nil
                 && fabs(currentAnnotation.coordinate.latitude - newsAnnotation.coordinate.latitude) < EPSILON
                 && fabs(currentAnnotation.coordinate.longitude - newsAnnotation.coordinate.longitude) < EPSILON) {

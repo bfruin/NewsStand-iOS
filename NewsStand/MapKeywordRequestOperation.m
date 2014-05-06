@@ -77,8 +77,12 @@
 
 -(void)parser:(NSXMLParser*)parserIn didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
-    if ([elementName isEqualToString:@"item"])
+    if ([elementName isEqualToString:@"item"]) {
         currentAnnotation = [[NewsAnnotation alloc] init];
+        if (!clusterOrKeyword) {
+            [currentAnnotation setLocationMarker:YES];
+        }
+    }
 }
 
 -(void)parser:(NSXMLParser*)parserIn didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
@@ -95,12 +99,15 @@
         [currentAnnotation setGaz_id:[currentStringTrimmed intValue]];
     else if ([elementName isEqualToString:@"gaztag_id"])
         [currentAnnotation setGaztag_id:[currentStringTrimmed intValue]];
-    else if ([elementName isEqualToString:@"name"])
+    else if ([elementName isEqualToString:@"name"]) {
         [currentAnnotation setName:currentStringTrimmed];
+        [currentAnnotation setTitle:currentStringTrimmed];
+    } else if ([elementName isEqualToString:@"full_name"])
+        [currentAnnotation setFullName:currentStringTrimmed];
     else if ([elementName isEqualToString:@"cluster_id"])
         [currentAnnotation setCluster_id:[currentStringTrimmed intValue]];
     else if ([elementName isEqualToString:@"title"])
-        [currentAnnotation setTitle:currentStringTrimmed];
+        [currentAnnotation setSubtitle:currentStringTrimmed];
     else if ([elementName isEqualToString:@"translate_title"])
         [currentAnnotation setTranslate_title:currentStringTrimmed];
     else if ([elementName isEqualToString:@"description"])
@@ -124,4 +131,3 @@
 @end
 
 
-@end
