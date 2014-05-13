@@ -380,14 +380,9 @@ andClusterID:(int)clusterID
     return @"";
 }
 
-- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     int row = [indexPath row];
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    if (cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-    
     if (row == selectedIndex) {
         cell.backgroundColor = [UIColor colorWithRed:(76.0/255.0) green:(161.0/255.0) blue:(255.0/255.0) alpha:1.0]; // perfect color suggested by @mohamadHafez
         [[cell textLabel] setTextColor:[UIColor whiteColor]];
@@ -395,6 +390,15 @@ andClusterID:(int)clusterID
         cell.backgroundColor = [UIColor whiteColor];
         [[cell textLabel] setTextColor:[UIColor blueColor]];
     }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    int row = [indexPath row];
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if (cell == nil)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     
     NewsAnnotation *currAnnotation = [annotations objectAtIndex:row];
     
@@ -434,17 +438,24 @@ andClusterID:(int)clusterID
         } else {
             selectedIndex = row;
             [self.tableView reloadData];
+            [minimapText setHidden:YES];
             
             int currentClusterID = [[annotations objectAtIndex:selectedIndex] cluster_id];
             
+            [keywordPrevious setHidden:YES];
             if ([clusterKeywordMarkers objectForKey:[NSNumber numberWithInt:currentClusterID]] != nil) {
                 NSMutableArray *currentClusterMarkers = [clusterKeywordMarkers objectForKey:[NSNumber numberWithInt:currentClusterID]];
                 if (currentClusterMarkers != nil && [currentClusterMarkers count] > 1) {
                     [keywordSlider setHidden:NO];
+                    [keywordNext setHidden:NO];
                 } else {
                     [keywordSlider setHidden:YES];
+                    [keywordNext setHidden:YES];
                 }
+                highlightedKeyword = -1;
+                
                 [mapView removeAnnotations:previousClusterKeywordMarkers];
+                previousClusterKeywordMarkers = [clusterKeywordMarkers objectForKey:[NSNumber numberWithInt:currentClusterID]];
                 [self keywordSliderChangedValue:nil];
             } else {
                 ViewController *viewController = [[self.navigationController viewControllers] objectAtIndex:0];
@@ -462,9 +473,7 @@ andClusterID:(int)clusterID
                 
                     MapKeywordRequestOperation *mapClusterKeywordRequest = [[MapKeywordRequestOperation alloc] initWithRequestString:urlStringClusterKeyword andDetailViewController:self   andLayer:layer isClusterOrKeyword:true];
                     [queue addOperation:mapClusterKeywordRequest];
-                
-                    NSLog([NSString stringWithFormat:@"Cluster/Keyword request: %@", urlStringClusterKeyword]);
-                }
+                                }
             }
             [self fitMapToMarkers];
         }
@@ -492,6 +501,7 @@ andClusterID:(int)clusterID
     annotationView.canShowCallout = YES;
     
     if (newsAnnotation.gaz_id == gaz_id) {
+        NSLog(@"Found current");
         annotationView.image = currentImage;
     } else if (newsAnnotation.locationMarker) {
         annotationView.image = locationImage;
@@ -613,17 +623,29 @@ andClusterID:(int)clusterID
     if (isLocation) {
         [minimapText setTextColor:[UIColor blueColor]];
     } else {
-        [minimapText setTextColor:[UIColor yellowColor]];
+        [minimapText setTextColor:[UIColor orangeColor]];
     }
     
     [minimapText setText:text];
     [mapView reloadInputViews];
 }
 
+-(void)setCenterForAnnotation:(NewsAnnotation*)annotation
+{
+    [mapView setCenterCoordinate:CLLocationCoordinate2DMake([annotation latitude], [annotation longitude])];
+}
+
 -(IBAction)locationPreviousPressed:(id)sender
 {
+    [self restoreOtherMarkerColorIsLocation:YES];
+
+    NewsAnnotation *annotation = [locationNameMarkers objectAtIndex:highlightedLocation];
     MKAnnotationView *av = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
-    av.image = locationImage;
+    if ([annotation gaz_id] == gaz_id) {
+        av.image = currentImage;
+    } else {
+        av.image = locationImage;
+    }
     
     highlightedLocation--;
     MKAnnotationView *highlightedAV = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
@@ -636,11 +658,26 @@ andClusterID:(int)clusterID
     }
     
     [self setMinimapText:[[locationNameMarkers objectAtIndex:highlightedLocation] fullName] isLocation:YES];
+    [self setCenterForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
 }
 
 -(IBAction)locationNextPressed:(id)sender
 {
+    [self restoreOtherMarkerColorIsLocation:YES];
+
+    if (highlightedLocation > -1) {
+        NewsAnnotation *annotation = [locationNameMarkers objectAtIndex:highlightedLocation];
+        MKAnnotationView *av = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
+        if ([annotation gaz_id] == gaz_id) {
+            av.image = currentImage;
+        } else {
+            av.image = locationImage;
+        }
+    }
+    
     highlightedLocation++;
+    MKAnnotationView *highlightedAV = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
+    highlightedAV.image = highlightedLocationImage;
     
     [locationPrevious setHidden:NO];
     if (highlightedLocation >= [locationNameMarkers count]-1) {
@@ -648,6 +685,81 @@ andClusterID:(int)clusterID
     }
     
     [self setMinimapText:[[locationNameMarkers objectAtIndex:highlightedLocation] fullName] isLocation:YES];
+    [self setCenterForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
+}
+
+-(IBAction)keywordPreviousPressed:(id)sender
+{
+    [self restoreOtherMarkerColorIsLocation:NO];
+    
+    NewsAnnotation *annotation = [previousClusterKeywordMarkers objectAtIndex:highlightedKeyword];
+    MKAnnotationView *av = [mapView viewForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+    if ([annotation gaz_id] == gaz_id) {
+        av.image = currentImage;
+    } else {
+        av.image = keywordImage;
+    }
+    
+    highlightedKeyword--;
+    MKAnnotationView *highlightedAV = [mapView viewForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+    highlightedAV.image = highlightedKeywordImage;
+    
+    [keywordNext setHidden:NO];
+    if (highlightedKeyword < 1) {
+        [keywordPrevious setHidden:YES];
+        
+    }
+    
+    [self setMinimapText:[[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword] name] isLocation:NO];
+    [self setCenterForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+}
+
+-(IBAction)keywordNextPressed:(id)sender
+{
+    [self restoreOtherMarkerColorIsLocation:NO];
+    
+    if (highlightedKeyword > -1) {
+        NewsAnnotation *annotation = [previousClusterKeywordMarkers objectAtIndex:highlightedKeyword];
+        MKAnnotationView *av = [mapView viewForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+        if ([annotation gaz_id] == gaz_id) {
+            av.image = currentImage;
+        } else {
+            av.image = keywordImage;
+        }
+    }
+    
+    highlightedKeyword++;
+    MKAnnotationView *highlightedAV = [mapView viewForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+    highlightedAV.image = highlightedKeywordImage;
+    
+    [keywordPrevious setHidden:NO];
+    if (highlightedKeyword >= [previousClusterKeywordMarkers count]-1) {
+        [keywordNext setHidden:YES];
+    }
+    
+    [self setMinimapText:[[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword] name] isLocation:NO];
+    [self setCenterForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+}
+
+-(void)restoreOtherMarkerColorIsLocation:(BOOL)isLocation
+{
+    if (isLocation && highlightedKeyword >= 0) {
+        NewsAnnotation *annotation = [previousClusterKeywordMarkers objectAtIndex:highlightedKeyword];
+        MKAnnotationView *av = [mapView viewForAnnotation:[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword]];
+        if ([annotation gaz_id] == gaz_id) {
+            av.image = currentImage;
+        } else {
+            av.image = keywordImage;
+        }
+    } else if(!isLocation && highlightedLocation >= 0) {
+        NewsAnnotation *annotation = [locationNameMarkers objectAtIndex:highlightedLocation];
+        MKAnnotationView *av = [mapView viewForAnnotation:[locationNameMarkers objectAtIndex:highlightedLocation]];
+        if ([annotation gaz_id] == gaz_id) {
+            av.image = currentImage;
+        } else {
+            av.image = locationImage;
+        }
+    }
 }
 
 #pragma mark - iPad
@@ -759,26 +871,31 @@ andClusterID:(int)clusterID
     
     previousClusterKeywordMarkers = clusterKeywordArray;
     [clusterKeywordMarkers setObject:clusterKeywordArray forKey:[NSNumber numberWithInt:[[annotations objectAtIndex:selectedIndex] cluster_id]]];
-    if (clusterKeywordMarkers != nil && [clusterKeywordMarkers count] > 1) {
+    if (clusterKeywordArray != nil && [clusterKeywordArray count] > 1) {
         [keywordSlider setHidden:NO];
-        [self keywordSliderChangedValue:nil];
+        [keywordNext setHidden:NO];
     } else {
         [keywordSlider setHidden:YES];
+        [keywordNext setHidden:YES];
     }
+    [keywordPrevious setHidden:YES];
+    [self keywordSliderChangedValue:nil];
+    highlightedKeyword = -1;
     [self fitMapToMarkers];
 }
 
 -(void)parseEndedLocationName:(NSMutableArray*)locationNameArray
 {
     locationNameMarkers = [[NSMutableArray alloc] initWithArray:locationNameArray];
-    if (locationNameMarkers.count > 1) {
+    if ([locationNameMarkers count] > 1) {
         [locationSlider setHidden:NO];
         [locationNext setHidden:NO];
-        [self locationSliderChangedValue:nil];
     } else {
         [locationSlider setHidden:YES];
         [locationNext setHidden:YES];
     }
+    [self locationSliderChangedValue:nil];
+    highlightedLocation = -1;
     [self fitMapToMarkers];
 }
 
