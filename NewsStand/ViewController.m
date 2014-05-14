@@ -890,6 +890,7 @@ static float MOTION_SCALE = 5.0;
     return annotationView;
 }
 
+// Prefetch location query on marker select
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
     NewsAnnotation *annotation = [view annotation];

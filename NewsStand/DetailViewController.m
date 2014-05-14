@@ -493,6 +493,7 @@ andClusterID:(int)clusterID
 #pragma mark - Map / Delegate
 -(MKAnnotationView *)mapView:(MKMapView *)localMapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
+    // Recycle existing views
     NewsAnnotationView *annotationView = (NewsAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:@"newsview"];
     if (annotationView == nil)
         annotationView = [[NewsAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"newsview"];
@@ -500,18 +501,84 @@ andClusterID:(int)clusterID
     NewsAnnotation *newsAnnotation = (NewsAnnotation *)annotation;
     annotationView.canShowCallout = YES;
     
+    // Set the annotation view's image
     if (newsAnnotation.gaz_id == gaz_id) {
         NSLog(@"Found current");
         annotationView.image = currentImage;
-    } else if (newsAnnotation.locationMarker) {
-        annotationView.image = locationImage;
+    } else if ([newsAnnotation locationMarker]) {
+        if (highlightedLocation > -1 && [newsAnnotation gaz_id] == [[locationNameMarkers objectAtIndex:highlightedLocation] gaz_id]) {
+            annotationView.image = highlightedLocationImage;
+        } else {
+            annotationView.image = locationImage;
+        }
     } else {
-        annotationView.image = keywordImage;
+        if (highlightedKeyword > -1 && [newsAnnotation gaz_id] == [[previousClusterKeywordMarkers objectAtIndex:highlightedKeyword] gaz_id]) {
+            annotationView.image = highlightedKeywordImage;
+        } else {
+            annotationView.image = keywordImage;
+        }
     }
     
     annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
     
     return annotationView;
+}
+
+- (void)mapView:(MKMapView *)_mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+    NewsAnnotation *newsAnnotation = [view annotation];
+    
+    [self clearTableAndMap];
+    [self updateMapForGazId:[newsAnnotation gaz_id]];
+    [self setTitle:[newsAnnotation name]];
+}
+
+-(void)clearTableAndMap
+{
+    // Clear all overlays
+    [mapView removeAnnotations:[mapView annotations]];
+    [mapView removeOverlays:[mapView overlays]];
+    
+    [annotations removeAllObjects];
+    [clusterKeywordMarkers removeAllObjects];
+    [previousClusterKeywordMarkers removeAllObjects];
+    [locationNameMarkers removeAllObjects];
+    
+    [tableView reloadData];
+    
+    [locationPrevious setHidden:YES];
+    [locationNext setHidden:YES];
+    [locationSlider setHidden:YES];
+    [keywordPrevious setHidden:YES];
+    [keywordNext setHidden:YES];
+    [keywordSlider setHidden:YES];
+    
+    highlightedLocation = -1;
+    highlightedKeyword = -1;
+    selectedIndex = 0;
+    
+    [minimapText setHidden:YES];
+}
+
+-(void)updateMapForGazId:(int)updatedGazID
+{
+    NSString *modeParam = @"newsstand";
+    NSString *urlString = @"";
+    
+    gaz_id = updatedGazID;
+    
+    if (standMode == 1)
+        modeParam = @"twitterstand";
+    urlString = [NSString stringWithFormat:@"http://%@.umiacs.umd.edu/news/xml_top_locations?gaz_id=%d%@%@", modeParam, gaz_id, sourceParamString, settingsParamString];
+    NSLog(@"Detail View URL: %@", urlString);
+
+    urlString = [self URLEncodeString:urlString];
+
+    [activityIndicator startAnimating];
+    
+    queue = [[NSOperationQueue alloc] init];
+    DetailViewRequestOperation *detailViewRequestOperation = [[DetailViewRequestOperation alloc] initWithRequestString:urlString andDetailViewController:self];
+    [queue addOperation:detailViewRequestOperation];
 }
 
 -(void)fitMapToMarkers

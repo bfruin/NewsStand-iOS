@@ -235,7 +235,8 @@
     else if ([elementName isEqualToString:@"height"])
         [currentAnnotation setHeight:[currentStringTrimmed intValue]];
     else if ([elementName isEqualToString:@"keyword"]) {
-        if ([[NSCharacterSet uppercaseLetterCharacterSet] characterIsMember:[currentStringTrimmed characterAtIndex:0]])
+        if (currentStringTrimmed != nil && [currentStringTrimmed length] > 0 &&
+            [[NSCharacterSet uppercaseLetterCharacterSet] characterIsMember:[currentStringTrimmed characterAtIndex:0]])
             [currentAnnotation setKeyword:currentStringTrimmed];
         else 
             [currentAnnotation setKeyword:[currentStringTrimmed capitalizedString]];
