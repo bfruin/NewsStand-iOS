@@ -311,7 +311,7 @@
         <image name="compass.png" width="30" height="30"/>
         <image name="home.png" width="22" height="22"/>
         <image name="info.png" width="32" height="32"/>
-        <image name="locate.png" width="20" height="20"/>
+        <image name="locate.png" width="35" height="35"/>
         <image name="minus.png" width="26" height="26"/>
         <image name="newspaper.png" width="26" height="26"/>
         <image name="plus.png" width="26" height="26"/>
@@ -319,6 +319,6 @@
         <image name="rss.png" width="30" height="30"/>
         <image name="search.png" width="24" height="24"/>
         <image name="settings.png" width="26" height="28"/>
-        <image name="world.png" width="26" height="26"/>
+        <image name="world.png" width="35" height="35"/>
     </resources>
 </document>

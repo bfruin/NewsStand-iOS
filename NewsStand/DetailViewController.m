@@ -28,6 +28,7 @@
 @synthesize locationImage, keywordImage, highlightedLocationImage, highlightedKeywordImage, currentImage;
 @synthesize navigationBar, leftBarButtonItem;
 @synthesize dismissParent;
+@synthesize selectedIndex;
 @synthesize queue;
 
 BOOL first;
@@ -335,12 +336,14 @@ andClusterID:(int)clusterID
             [self.navigationController popViewControllerAnimated:YES];
         } else {
             DetailViewController *detailViewController = [[DetailViewController alloc] initWithNibName:@"DetailViewController" andGazId:gaz_id andSourceString:sourceParamString andSettingsString:settingsParamString withTitle:detailTitle andStandMode:standMode];
+            [detailViewController setSelectedIndex:selectedIndex];
             [self.navigationController pushViewController:detailViewController animated:YES];
         }
     } else {
         rotated = true;
         if (portraitFirst) {
             DetailViewController *detailViewController = [[DetailViewController alloc] initWithNibName:@"DetailViewController_Landscape" andGazId:gaz_id andSourceString:sourceParamString andSettingsString:settingsParamString withTitle:detailTitle andStandMode:standMode];
+            [detailViewController setSelectedIndex:selectedIndex];
             [self.navigationController pushViewController:detailViewController animated:YES];
         } else {
             [self.navigationController popViewControllerAnimated:YES];

@@ -121,6 +121,8 @@
 @property (strong, nonatomic) NSString *settingsParamString;
 @property (strong, nonatomic) NSString *detailTitle;
 
+@property (readwrite) int selectedIndex;
+
 //Rotation
 @property (nonatomic, readwrite) BOOL dismissParent;
 
